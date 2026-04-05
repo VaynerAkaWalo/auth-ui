@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,12 +14,23 @@ import {
 import { register } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
+function isExternalUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.origin !== window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
 export default function Register() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectUrl = searchParams.get("redirect_url") || searchParams.get("target");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,7 +55,15 @@ export default function Register() {
 
       if (response.ok) {
         toast.success("Account created successfully");
-        navigate("/login");
+        const loginLink = redirectUrl
+          ? `/login?redirect_url=${encodeURIComponent(redirectUrl)}`
+          : "/login";
+        if (redirectUrl && isExternalUrl(redirectUrl)) {
+          const externalLoginLink = `${window.location.origin}${loginLink}`;
+          window.location.href = externalLoginLink;
+        } else {
+          navigate(loginLink);
+        }
       } else if (response.status === 409) {
         toast.error("Identity with this name already exists");
       } else if (response.status === 400) {
@@ -59,6 +78,10 @@ export default function Register() {
       setIsLoading(false);
     }
   }
+
+  const loginLink = redirectUrl
+    ? `/login?redirect_url=${encodeURIComponent(redirectUrl)}`
+    : "/login";
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -119,7 +142,7 @@ export default function Register() {
             <span className="text-muted-foreground">
               Already have an account?{" "}
             </span>
-            <Link to="/login" className="text-primary hover:underline">
+            <Link to={loginLink} className="text-primary hover:underline">
               Sign in
             </Link>
           </div>

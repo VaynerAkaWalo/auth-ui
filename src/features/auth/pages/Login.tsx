@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,11 +14,22 @@ import {
 import { login } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
+function isExternalUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.origin !== window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
 export default function Login() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectUrl = searchParams.get("redirect_url") || searchParams.get("target") || "/dashboard";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,7 +50,11 @@ export default function Login() {
 
       if (response.ok) {
         toast.success("Login successful");
-        navigate("/dashboard");
+        if (isExternalUrl(redirectUrl)) {
+          window.location.href = redirectUrl;
+        } else {
+          navigate(redirectUrl);
+        }
       } else if (response.status === 401) {
         toast.error("Invalid credentials");
       } else {
@@ -51,6 +66,10 @@ export default function Login() {
       setIsLoading(false);
     }
   }
+
+  const registerLink = redirectUrl !== "/dashboard"
+    ? `/register?redirect_url=${encodeURIComponent(redirectUrl)}`
+    : "/register";
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -100,7 +119,7 @@ export default function Login() {
             <span className="text-muted-foreground">
               Don&apos;t have an account?{" "}
             </span>
-            <Link to="/register" className="text-primary hover:underline">
+            <Link to={registerLink} className="text-primary hover:underline">
               Register
             </Link>
           </div>
