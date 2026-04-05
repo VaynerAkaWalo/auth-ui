@@ -36,9 +36,9 @@ jobs:
       - name: Generate custom tag
         id: tag
         run: |
-          DATE=$(date +%Y%m%d)
+          DATETIME=$(date +%Y%m%d%H%M)
           SHORT_SHA=${GITHUB_SHA::7}
-          echo "custom_tag=CD-${DATE}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "custom_tag=CD-${DATETIME}-${SHORT_SHA}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         id: build-and-push
