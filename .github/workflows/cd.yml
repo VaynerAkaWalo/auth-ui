@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: vaynerakawalo/auth-ui
 
 jobs:
   build-and-push:
@@ -37,8 +37,9 @@ jobs:
         id: tag
         run: |
           DATE=$(date +%Y%m%d)
+          TIME=$(date +%H%M)
           SHORT_SHA=${GITHUB_SHA::7}
-          echo "custom_tag=CD-${DATE}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "custom_tag=CD-${DATE}-${TIME}-${SHORT_SHA}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         id: build-and-push
