@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Layout } from "@/components/layout/Layout";
 import { login } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
@@ -72,7 +73,7 @@ export default function Login() {
     : "/register";
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <Layout>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
@@ -125,9 +126,6 @@ export default function Login() {
           </div>
         </CardContent>
       </Card>
-      <div className="fixed bottom-4 left-0 right-0 text-center">
-        <span className="text-xs text-muted-foreground">Blamedevs © 2026</span>
-      </div>
-    </div>
+    </Layout>
   );
 }

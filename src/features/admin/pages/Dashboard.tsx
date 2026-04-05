@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Layout } from '@/components/layout/Layout'
 import { logout, whoAmI, type WhoAmIResponse } from '@/lib/api'
 import { User, LogOut, Loader2 } from 'lucide-react'
 
@@ -59,8 +60,29 @@ export default function Dashboard() {
     )
   }
 
+  const logoutButton = (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={handleLogout}
+      disabled={isLoggingOut}
+    >
+      {isLoggingOut ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Logging out...
+        </>
+      ) : (
+        <>
+          <LogOut className="mr-2 h-4 w-4" />
+          Logout
+        </>
+      )}
+    </Button>
+  )
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <Layout headerRightContent={logoutButton}>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Dashboard</CardTitle>
@@ -78,30 +100,8 @@ export default function Dashboard() {
               <p className="text-lg font-semibold">{user?.name}</p>
             </div>
           </div>
-
-          <Button
-            variant="destructive"
-            className="w-full"
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-          >
-            {isLoggingOut ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Logging out...
-              </>
-            ) : (
-              <>
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </>
-            )}
-          </Button>
         </CardContent>
       </Card>
-      <div className="fixed bottom-4 left-0 right-0 text-center">
-        <span className="text-xs text-muted-foreground">blamedevs © 2026</span>
-      </div>
-    </div>
+    </Layout>
   )
 }
