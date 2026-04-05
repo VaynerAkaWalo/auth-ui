@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Layout } from '@/components/layout/Layout'
+import { useKeepAlive } from '@/hooks/useKeepAlive'
 import { logout, whoAmI, type WhoAmIResponse } from '@/lib/api'
 import { User, LogOut, Loader2 } from 'lucide-react'
 
@@ -12,6 +13,8 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const navigate = useNavigate()
+
+  useKeepAlive({ interval: 60000 })
 
   useEffect(() => {
     async function checkAuth() {
