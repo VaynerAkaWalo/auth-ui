@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Layout } from "@/components/layout/Layout";
+import { Layout } from "@/components/layout/layout";
 import { register } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
