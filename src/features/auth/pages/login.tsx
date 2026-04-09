@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Layout } from "@/components/layout/Layout";
-import { register } from "@/lib/api";
+import { Layout } from "@/components/layout/layout";
+import { login } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
 function isExternalUrl(url: string): boolean {
@@ -24,14 +24,13 @@ function isExternalUrl(url: string): boolean {
   }
 }
 
-export default function Register() {
+export default function Login() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectUrl = searchParams.get("redirect_url") || searchParams.get("target");
+  const redirectUrl = searchParams.get("redirect_url") || searchParams.get("target") || "/dashboard";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,34 +43,23 @@ export default function Register() {
       toast.error("Password is required");
       return;
     }
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
 
     setIsLoading(true);
 
     try {
-      const response = await register(name, password);
+      const response = await login(name, password);
 
       if (response.ok) {
-        toast.success("Account created successfully");
-        const loginLink = redirectUrl
-          ? `/login?redirect_url=${encodeURIComponent(redirectUrl)}`
-          : "/login";
-        if (redirectUrl && isExternalUrl(redirectUrl)) {
-          const externalLoginLink = `${window.location.origin}${loginLink}`;
-          window.location.href = externalLoginLink;
+        toast.success("Login successful");
+        if (isExternalUrl(redirectUrl)) {
+          window.location.href = redirectUrl;
         } else {
-          navigate(loginLink);
+          navigate(redirectUrl);
         }
-      } else if (response.status === 409) {
-        toast.error("Identity with this name already exists");
-      } else if (response.status === 400) {
-        const data = await response.json().catch(() => null);
-        toast.error(data?.message || "Invalid request");
+      } else if (response.status === 401) {
+        toast.error("Invalid credentials");
       } else {
-        toast.error("Registration failed");
+        toast.error("Login failed");
       }
     } catch {
       toast.error("Network error");
@@ -80,17 +68,17 @@ export default function Register() {
     }
   }
 
-  const loginLink = redirectUrl
-    ? `/login?redirect_url=${encodeURIComponent(redirectUrl)}`
-    : "/login";
+  const registerLink = redirectUrl !== "/dashboard"
+    ? `/register?redirect_url=${encodeURIComponent(redirectUrl)}`
+    : "/register";
 
   return (
     <Layout>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Create account</CardTitle>
+          <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
           <CardDescription className="text-center">
-            Enter your details to create a new account
+            Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -100,7 +88,7 @@ export default function Register() {
               <Input
                 id="name"
                 type="text"
-                placeholder="Choose a name"
+                placeholder="Enter your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isLoading}
@@ -111,20 +99,9 @@ export default function Register() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Choose a password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
               />
             </div>
@@ -132,19 +109,19 @@ export default function Register() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
+                  Signing in...
                 </>
               ) : (
-                "Create account"
+                "Sign in"
               )}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
             <span className="text-muted-foreground">
-              Already have an account?{" "}
+              Don&apos;t have an account?{" "}
             </span>
-            <Link to={loginLink} className="text-primary hover:underline">
-              Sign in
+            <Link to={registerLink} className="text-primary hover:underline">
+              Register
             </Link>
           </div>
         </CardContent>
