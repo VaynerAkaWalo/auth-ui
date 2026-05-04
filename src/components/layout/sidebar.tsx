@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, KeyRound } from 'lucide-react'
+import { LayoutDashboard, KeyRound, Users } from 'lucide-react'
 
 interface NavItem {
   to: string
@@ -10,6 +10,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { to: '/dashboard', label: 'Overview', icon: <LayoutDashboard className="h-4 w-4" /> },
   { to: '/dashboard/jwks', label: 'JWKS Keys', icon: <KeyRound className="h-4 w-4" /> },
+  { to: '/dashboard/clients', label: 'Clients', icon: <Users className="h-4 w-4" /> },
 ]
 
 export function Sidebar() {
