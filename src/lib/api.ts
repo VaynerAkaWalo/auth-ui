@@ -42,3 +42,26 @@ export interface WhoAmIResponse {
   id: string
   name: string
 }
+
+export interface JWK {
+  kty: string
+  kid: string
+  use: string
+  alg: string
+  n: string
+  e: string
+}
+
+export interface JwksResponse {
+  keys: JWK[]
+}
+
+export async function getJwks() {
+  const response = await fetch('/.well-known/jwks.json', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return response
+}
