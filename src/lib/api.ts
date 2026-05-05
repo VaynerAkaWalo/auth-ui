@@ -56,6 +56,37 @@ export interface JwksResponse {
   keys: JWK[]
 }
 
+export interface Client {
+  id: string
+  name: string
+  domain: string
+  redirectURI: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface RegisterClientResponse {
+  clientId: string
+  clientSecret: string
+}
+
+export async function listClients() {
+  return fetchApi('/v1/oauth2/clients', {
+    method: 'GET',
+  })
+}
+
+export async function registerClient(
+  name: string,
+  domain: string,
+  redirectURI: string
+) {
+  return fetchApi('/v1/oauth2/clients', {
+    method: 'POST',
+    body: JSON.stringify({ name, domain, redirectURI }),
+  })
+}
+
 export async function getJwks() {
   const response = await fetch('/.well-known/jwks.json', {
     method: 'GET',
