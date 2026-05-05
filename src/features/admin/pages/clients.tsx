@@ -288,6 +288,7 @@ export default function ClientsPage() {
               <div className="flex items-center gap-2">
                 <Input
                   readOnly
+                  type="password"
                   value={registeredClient?.clientSecret ?? ''}
                   className="font-mono"
                 />
