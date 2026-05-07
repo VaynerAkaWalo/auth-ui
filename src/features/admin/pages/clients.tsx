@@ -181,35 +181,20 @@ export default function ClientsPage() {
                   className="font-mono text-sm"
                 />
               </div>
-              <fieldset className="space-y-2">
-                <legend className="text-xs tracking-[0.15em] uppercase font-mono">Type</legend>
-                <div className="flex gap-6 pt-1">
-                  <label className="flex items-center gap-2 font-mono text-sm cursor-pointer">
-                    <input
-                      type="radio"
-                      name="type"
-                      value={ClientType.Confidential}
-                      checked={type === ClientType.Confidential}
-                      onChange={() => setType(ClientType.Confidential)}
-                      disabled={isSubmitting}
-                      className="accent-foreground"
-                    />
-                    confidential
-                  </label>
-                  <label className="flex items-center gap-2 font-mono text-sm cursor-pointer">
-                    <input
-                      type="radio"
-                      name="type"
-                      value={ClientType.Public}
-                      checked={type === ClientType.Public}
-                      onChange={() => setType(ClientType.Public)}
-                      disabled={isSubmitting}
-                      className="accent-foreground"
-                    />
-                    public
-                  </label>
-                </div>
-              </fieldset>
+              <div className="space-y-2">
+                <Label htmlFor="type" className="text-xs tracking-[0.15em] uppercase font-mono">Type</Label>
+                <select
+                  id="type"
+                  value={type ?? ''}
+                  onChange={(e) => setType(e.target.value as ClientType)}
+                  disabled={isSubmitting}
+                  className="flex h-10 w-full rounded-none border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="" disabled>Select type</option>
+                  <option value={ClientType.Confidential}>confidential</option>
+                  <option value={ClientType.Public}>public</option>
+                </select>
+              </div>
             </div>
             <Button type="submit" disabled={isSubmitting} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-3 px-6">
               {isSubmitting && (
