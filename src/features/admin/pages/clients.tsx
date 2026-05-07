@@ -28,7 +28,7 @@ export default function ClientsPage() {
   const [name, setName] = useState('')
   const [domain, setDomain] = useState('')
   const [redirectURI, setRedirectURI] = useState('')
-  const [type, setType] = useState<ClientType | null>(null)
+  const [type, setType] = useState<ClientType>(ClientType.Public)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [registeredClient, setRegisteredClient] =
@@ -78,10 +78,6 @@ export default function ClientsPage() {
       toast.error('Redirect URI is required')
       return
     }
-    if (type === null) {
-      toast.error('Type is required')
-      return
-    }
 
     setIsSubmitting(true)
     try {
@@ -94,7 +90,7 @@ export default function ClientsPage() {
         setName('')
         setDomain('')
         setRedirectURI('')
-        setType(null)
+        setType(ClientType.Public)
         await fetchClients()
       } else {
         let message = 'Failed to register client'
@@ -188,12 +184,11 @@ export default function ClientsPage() {
                 <Label htmlFor="type" className="text-xs tracking-[0.15em] uppercase font-mono">Type</Label>
                 <select
                   id="type"
-                  value={type ?? ''}
+                  value={type}
                   onChange={(e) => setType(e.target.value as ClientType)}
                   disabled={isSubmitting}
                   className="flex h-10 w-full rounded-none border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="" disabled>Select type</option>
                   <option value={ClientType.Confidential}>confidential</option>
                   <option value={ClientType.Public}>public</option>
                 </select>
