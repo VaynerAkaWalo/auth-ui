@@ -14,6 +14,7 @@ import {
 import {
   listClients,
   registerClient,
+  ClientType,
   type Client,
   type RegisterClientResponse,
 } from '@/lib/api'
@@ -27,7 +28,7 @@ export default function ClientsPage() {
   const [name, setName] = useState('')
   const [domain, setDomain] = useState('')
   const [redirectURI, setRedirectURI] = useState('')
-  const [type, setType] = useState<'confidential' | 'public' | ''>('')
+  const [type, setType] = useState<ClientType | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [registeredClient, setRegisteredClient] =
@@ -75,7 +76,7 @@ export default function ClientsPage() {
       toast.error('Redirect URI is required')
       return
     }
-    if (!type) {
+    if (type === null) {
       toast.error('Type is required')
       return
     }
@@ -90,7 +91,7 @@ export default function ClientsPage() {
         setName('')
         setDomain('')
         setRedirectURI('')
-        setType('')
+        setType(null)
         await fetchClients()
       } else {
         let message = 'Failed to register client'
@@ -187,9 +188,9 @@ export default function ClientsPage() {
                     <input
                       type="radio"
                       name="type"
-                      value="confidential"
-                      checked={type === 'confidential'}
-                      onChange={() => setType('confidential')}
+                      value={ClientType.Confidential}
+                      checked={type === ClientType.Confidential}
+                      onChange={() => setType(ClientType.Confidential)}
                       disabled={isSubmitting}
                       className="accent-foreground"
                     />
@@ -199,9 +200,9 @@ export default function ClientsPage() {
                     <input
                       type="radio"
                       name="type"
-                      value="public"
-                      checked={type === 'public'}
-                      onChange={() => setType('public')}
+                      value={ClientType.Public}
+                      checked={type === ClientType.Public}
+                      onChange={() => setType(ClientType.Public)}
                       disabled={isSubmitting}
                       className="accent-foreground"
                     />
