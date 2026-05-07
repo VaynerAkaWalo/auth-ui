@@ -14,11 +14,12 @@ import {
 import {
   listClients,
   registerClient,
+  deleteClient,
   ClientType,
   type Client,
   type RegisterClientResponse,
 } from '@/lib/api'
-import { Users, Loader2, AlertCircle, Copy, Check } from 'lucide-react'
+import { Users, Loader2, AlertCircle, Copy, Check, Trash2 } from 'lucide-react'
 
 const ClientTableRow = memo(function ClientTableRow({
   client,
@@ -26,12 +27,14 @@ const ClientTableRow = memo(function ClientTableRow({
   total,
   copiedField,
   onCopy,
+  onDelete,
 }: {
   client: Client
   index: number
   total: number
   copiedField: string | null
   onCopy: (id: string) => void
+  onDelete: (client: Client) => void
 }) {
   return (
     <tr className={`${index < total - 1 ? 'brutal-border-bottom' : ''} hover:bg-elevated transition-colors`}>
@@ -56,6 +59,17 @@ const ClientTableRow = memo(function ClientTableRow({
       <td className="px-5 py-3 font-mono text-xs text-muted whitespace-nowrap">
         {new Date(client.createdAt).toLocaleString()}
       </td>
+      <td className="px-5 py-3">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => onDelete(client)}
+          className="rounded-none h-8 w-8"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </td>
     </tr>
   )
 })
@@ -78,6 +92,8 @@ export default function ClientsPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const [deletingClient, setDeletingClient] = useState<Client | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     return () => clearTimeout(copyTimeoutRef.current)
@@ -159,6 +175,32 @@ export default function ClientsPage() {
     setCopiedField(field)
     clearTimeout(copyTimeoutRef.current)
     copyTimeoutRef.current = setTimeout(() => setCopiedField(null), 2000)
+  }
+
+  async function handleDeleteConfirm() {
+    if (!deletingClient) return
+    setIsDeleting(true)
+    try {
+      const response = await deleteClient(deletingClient.id)
+      if (response.ok) {
+        toast.success('Client deleted')
+        setDeletingClient(null)
+        await fetchClients()
+      } else {
+        let message = 'Failed to delete client'
+        try {
+          const err = await response.json()
+          if (err.message) message = err.message
+        } catch {
+          // ignore
+        }
+        toast.error(message)
+      }
+    } catch {
+      toast.error('Network error while deleting client')
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   if (isLoading) {
@@ -276,6 +318,7 @@ export default function ClientsPage() {
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Type</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Client ID</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Created</th>
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -287,6 +330,7 @@ export default function ClientsPage() {
                       total={clients.length}
                       copiedField={copiedField}
                       onCopy={(id) => handleCopy(id, id)}
+                      onDelete={(c) => setDeletingClient(c)}
                     />
                   ))}
                 </tbody>
@@ -295,6 +339,37 @@ export default function ClientsPage() {
           )}
         </div>
       </div>
+
+      <Dialog open={deletingClient !== null} onOpenChange={(open) => { if (!open) setDeletingClient(null) }}>
+        <DialogContent className="brutal-border-light bg-surface max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-mono text-sm tracking-[0.1em] uppercase">Delete client</DialogTitle>
+            <DialogDescription className="font-mono text-xs text-muted pt-2">
+              Are you sure you want to delete <strong className="text-foreground">{deletingClient?.name}</strong>? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setDeletingClient(null)}
+              disabled={isDeleting}
+              className="rounded-none text-xs tracking-[0.15em] uppercase font-mono h-auto py-2 px-5 flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              className="brutal-border bg-destructive text-destructive-foreground hover:bg-transparent hover:text-destructive text-xs tracking-[0.15em] uppercase font-mono h-auto py-2 px-5 flex-1"
+            >
+              {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="brutal-border-light bg-surface">
