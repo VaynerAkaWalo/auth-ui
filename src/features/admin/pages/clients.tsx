@@ -14,6 +14,7 @@ import {
 import {
   listClients,
   registerClient,
+  ClientType,
   type Client,
   type RegisterClientResponse,
 } from '@/lib/api'
@@ -27,10 +28,13 @@ export default function ClientsPage() {
   const [name, setName] = useState('')
   const [domain, setDomain] = useState('')
   const [redirectURI, setRedirectURI] = useState('')
+  const [type, setType] = useState<ClientType>(ClientType.Public)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [registeredClient, setRegisteredClient] =
     useState<RegisterClientResponse | null>(null)
+  const [registeredClientType, setRegisteredClientType] =
+    useState<ClientType | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
 
@@ -77,14 +81,16 @@ export default function ClientsPage() {
 
     setIsSubmitting(true)
     try {
-      const response = await registerClient(name, domain, redirectURI)
+      const response = await registerClient(name, domain, redirectURI, type)
       if (response.ok) {
         const data: RegisterClientResponse = await response.json()
         setRegisteredClient(data)
+        setRegisteredClientType(type)
         setDialogOpen(true)
         setName('')
         setDomain('')
         setRedirectURI('')
+        setType(ClientType.Public)
         await fetchClients()
       } else {
         let message = 'Failed to register client'
@@ -174,11 +180,24 @@ export default function ClientsPage() {
                   className="font-mono text-sm"
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="type" className="text-xs tracking-[0.15em] uppercase font-mono">Type</Label>
+                <select
+                  id="type"
+                  value={type}
+                  onChange={(e) => setType(e.target.value as ClientType)}
+                  disabled={isSubmitting}
+                  className="flex h-10 w-full rounded-none border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value={ClientType.Confidential}>confidential</option>
+                  <option value={ClientType.Public}>public</option>
+                </select>
+              </div>
             </div>
             <Button type="submit" disabled={isSubmitting} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-3 px-6">
-              {isSubmitting && (
+              {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              ) : null}
               Register client
             </Button>
           </form>
@@ -208,6 +227,8 @@ export default function ClientsPage() {
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Name</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Domain</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Redirect URI</th>
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Type</th>
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Client ID</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Created</th>
                   </tr>
                 </thead>
@@ -217,6 +238,21 @@ export default function ClientsPage() {
                       <td className="px-5 py-3 font-mono text-sm font-medium">{client.name}</td>
                       <td className="px-5 py-3 font-mono text-sm">{client.domain}</td>
                       <td className="px-5 py-3 font-mono text-xs break-all">{client.redirectURI}</td>
+                      <td className="px-5 py-3 font-mono text-xs uppercase tracking-wider">{client.type}</td>
+                      <td className="px-5 py-3">
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(client.id, client.id)}
+                          className="inline-flex items-center gap-1.5 font-mono text-xs text-muted hover:text-foreground transition-colors"
+                        >
+                          {client.id.substring(0, 8)}...
+                          {copiedField === client.id ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <Copy className="h-3 w-3 shrink-0" />
+                          )}
+                        </button>
+                      </td>
                       <td className="px-5 py-3 font-mono text-xs text-muted whitespace-nowrap">
                         {new Date(client.createdAt).toLocaleString()}
                       </td>
@@ -233,9 +269,11 @@ export default function ClientsPage() {
         <DialogContent className="brutal-border-light bg-surface">
           <DialogHeader>
             <DialogTitle className="font-mono text-sm tracking-[0.1em] uppercase">Client registered</DialogTitle>
-            <DialogDescription className="font-mono text-xs text-muted">
-              Copy these credentials now. The client secret will not be shown again.
-            </DialogDescription>
+            {registeredClientType === ClientType.Confidential ? (
+              <DialogDescription className="font-mono text-xs text-muted">
+                Copy these credentials now. The client secret will not be shown again.
+              </DialogDescription>
+            ) : null}
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -266,35 +304,37 @@ export default function ClientsPage() {
                 </Button>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs tracking-[0.15em] uppercase font-mono">Client Secret</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  readOnly
-                  type="password"
-                  value={registeredClient?.clientSecret ?? ''}
-                  className="font-mono text-sm"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() =>
-                    handleCopy(
-                      'clientSecret',
-                      registeredClient?.clientSecret ?? ''
-                    )
-                  }
-                  className="rounded-none"
-                >
-                  {copiedField === 'clientSecret' ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
+            {registeredClientType === ClientType.Confidential ? (
+              <div className="space-y-2">
+                <Label className="text-xs tracking-[0.15em] uppercase font-mono">Client Secret</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    readOnly
+                    type="password"
+                    value={registeredClient?.clientSecret ?? ''}
+                    className="font-mono text-sm"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() =>
+                      handleCopy(
+                        'clientSecret',
+                        registeredClient?.clientSecret ?? ''
+                      )
+                    }
+                    className="rounded-none"
+                  >
+                    {copiedField === 'clientSecret' ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
           <DialogFooter>
             <Button onClick={() => setDialogOpen(false)} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-2 px-5">

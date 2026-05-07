@@ -56,11 +56,17 @@ export interface JwksResponse {
   keys: JWK[]
 }
 
+export enum ClientType {
+  Confidential = 'confidential',
+  Public = 'public',
+}
+
 export interface Client {
   id: string
   name: string
   domain: string
   redirectURI: string
+  type: ClientType
   createdAt: number
   updatedAt: number
 }
@@ -79,11 +85,12 @@ export async function listClients() {
 export async function registerClient(
   name: string,
   domain: string,
-  redirectURI: string
+  redirectURI: string,
+  type: ClientType
 ) {
   return fetchApi('/v1/oauth2/clients', {
     method: 'POST',
-    body: JSON.stringify({ name, domain, redirectURI }),
+    body: JSON.stringify({ name, domain, redirectURI, type }),
   })
 }
 
