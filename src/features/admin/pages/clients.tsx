@@ -33,6 +33,8 @@ export default function ClientsPage() {
 
   const [registeredClient, setRegisteredClient] =
     useState<RegisterClientResponse | null>(null)
+  const [registeredClientType, setRegisteredClientType] =
+    useState<ClientType | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
 
@@ -87,6 +89,7 @@ export default function ClientsPage() {
       if (response.ok) {
         const data: RegisterClientResponse = await response.json()
         setRegisteredClient(data)
+        setRegisteredClientType(type)
         setDialogOpen(true)
         setName('')
         setDomain('')
@@ -256,9 +259,11 @@ export default function ClientsPage() {
         <DialogContent className="brutal-border-light bg-surface">
           <DialogHeader>
             <DialogTitle className="font-mono text-sm tracking-[0.1em] uppercase">Client registered</DialogTitle>
-            <DialogDescription className="font-mono text-xs text-muted">
-              Copy these credentials now. The client secret will not be shown again.
-            </DialogDescription>
+            {registeredClientType === ClientType.Confidential && (
+              <DialogDescription className="font-mono text-xs text-muted">
+                Copy these credentials now. The client secret will not be shown again.
+              </DialogDescription>
+            )}
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -289,35 +294,37 @@ export default function ClientsPage() {
                 </Button>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs tracking-[0.15em] uppercase font-mono">Client Secret</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  readOnly
-                  type="password"
-                  value={registeredClient?.clientSecret ?? ''}
-                  className="font-mono text-sm"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() =>
-                    handleCopy(
-                      'clientSecret',
-                      registeredClient?.clientSecret ?? ''
-                    )
-                  }
-                  className="rounded-none"
-                >
-                  {copiedField === 'clientSecret' ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
+            {registeredClientType === ClientType.Confidential && (
+              <div className="space-y-2">
+                <Label className="text-xs tracking-[0.15em] uppercase font-mono">Client Secret</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    readOnly
+                    type="password"
+                    value={registeredClient?.clientSecret ?? ''}
+                    className="font-mono text-sm"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() =>
+                      handleCopy(
+                        'clientSecret',
+                        registeredClient?.clientSecret ?? ''
+                      )
+                    }
+                    className="rounded-none"
+                  >
+                    {copiedField === 'clientSecret' ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <DialogFooter>
             <Button onClick={() => setDialogOpen(false)} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-2 px-5">
