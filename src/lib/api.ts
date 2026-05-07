@@ -95,6 +95,12 @@ export async function listClients() {
   })
 }
 
+export async function deleteClient(id: string) {
+  return fetchApi(`/v1/oauth2/clients/${id}`, {
+    method: 'DELETE',
+  })
+}
+
 export async function registerClient(
   name: string,
   domain: string,
