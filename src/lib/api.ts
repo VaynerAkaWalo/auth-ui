@@ -61,6 +61,7 @@ export interface Client {
   name: string
   domain: string
   redirectURI: string
+  type: 'confidential' | 'public'
   createdAt: number
   updatedAt: number
 }
@@ -79,11 +80,12 @@ export async function listClients() {
 export async function registerClient(
   name: string,
   domain: string,
-  redirectURI: string
+  redirectURI: string,
+  type: 'confidential' | 'public'
 ) {
   return fetchApi('/v1/oauth2/clients', {
     method: 'POST',
-    body: JSON.stringify({ name, domain, redirectURI }),
+    body: JSON.stringify({ name, domain, redirectURI, type }),
   })
 }
 

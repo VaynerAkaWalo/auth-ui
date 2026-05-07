@@ -27,6 +27,7 @@ export default function ClientsPage() {
   const [name, setName] = useState('')
   const [domain, setDomain] = useState('')
   const [redirectURI, setRedirectURI] = useState('')
+  const [type, setType] = useState<'confidential' | 'public' | ''>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [registeredClient, setRegisteredClient] =
@@ -74,10 +75,14 @@ export default function ClientsPage() {
       toast.error('Redirect URI is required')
       return
     }
+    if (!type) {
+      toast.error('Type is required')
+      return
+    }
 
     setIsSubmitting(true)
     try {
-      const response = await registerClient(name, domain, redirectURI)
+      const response = await registerClient(name, domain, redirectURI, type)
       if (response.ok) {
         const data: RegisterClientResponse = await response.json()
         setRegisteredClient(data)
@@ -85,6 +90,7 @@ export default function ClientsPage() {
         setName('')
         setDomain('')
         setRedirectURI('')
+        setType('')
         await fetchClients()
       } else {
         let message = 'Failed to register client'
@@ -174,6 +180,35 @@ export default function ClientsPage() {
                   className="font-mono text-sm"
                 />
               </div>
+              <fieldset className="space-y-2">
+                <legend className="text-xs tracking-[0.15em] uppercase font-mono">Type</legend>
+                <div className="flex gap-6 pt-1">
+                  <label className="flex items-center gap-2 font-mono text-sm cursor-pointer">
+                    <input
+                      type="radio"
+                      name="type"
+                      value="confidential"
+                      checked={type === 'confidential'}
+                      onChange={() => setType('confidential')}
+                      disabled={isSubmitting}
+                      className="accent-foreground"
+                    />
+                    confidential
+                  </label>
+                  <label className="flex items-center gap-2 font-mono text-sm cursor-pointer">
+                    <input
+                      type="radio"
+                      name="type"
+                      value="public"
+                      checked={type === 'public'}
+                      onChange={() => setType('public')}
+                      disabled={isSubmitting}
+                      className="accent-foreground"
+                    />
+                    public
+                  </label>
+                </div>
+              </fieldset>
             </div>
             <Button type="submit" disabled={isSubmitting} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-3 px-6">
               {isSubmitting && (
@@ -208,6 +243,7 @@ export default function ClientsPage() {
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Name</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Domain</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Redirect URI</th>
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Type</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Created</th>
                   </tr>
                 </thead>
@@ -217,6 +253,7 @@ export default function ClientsPage() {
                       <td className="px-5 py-3 font-mono text-sm font-medium">{client.name}</td>
                       <td className="px-5 py-3 font-mono text-sm">{client.domain}</td>
                       <td className="px-5 py-3 font-mono text-xs break-all">{client.redirectURI}</td>
+                      <td className="px-5 py-3 font-mono text-xs uppercase tracking-wider">{client.type}</td>
                       <td className="px-5 py-3 font-mono text-xs text-muted whitespace-nowrap">
                         {new Date(client.createdAt).toLocaleString()}
                       </td>
