@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -8,10 +8,53 @@ import { useKeepAlive } from '@/hooks/use-keep-alive'
 import { logout, whoAmI, type WhoAmIResponse } from '@/lib/api'
 import { LogOut, Loader2 } from 'lucide-react'
 
+const LogoutButton = memo(function LogoutButton() {
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const navigate = useNavigate()
+
+  async function handleLogout() {
+    setIsLoggingOut(true)
+    try {
+      const response = await logout()
+      if (response.ok) {
+        toast.success('Logged out successfully')
+        navigate('/login')
+      } else {
+        toast.error('Logout failed')
+      }
+    } catch {
+      toast.error('Network error')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={handleLogout}
+      disabled={isLoggingOut}
+      className="h-9 px-4 text-sm font-medium tracking-widest uppercase text-foreground hover:bg-foreground hover:text-background transition-colors duration-150"
+    >
+      {isLoggingOut ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Logging out...
+        </>
+      ) : (
+        <>
+          <LogOut className="mr-2 h-4 w-4" />
+          Logout
+        </>
+      )}
+    </Button>
+  )
+})
+
 export default function DashboardLayout() {
   const [user, setUser] = useState<WhoAmIResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const navigate = useNavigate()
 
   useKeepAlive({ interval: 60000 })
@@ -38,23 +81,6 @@ export default function DashboardLayout() {
     checkAuth()
   }, [navigate])
 
-  async function handleLogout() {
-    setIsLoggingOut(true)
-    try {
-      const response = await logout()
-      if (response.ok) {
-        toast.success('Logged out successfully')
-        navigate('/login')
-      } else {
-        toast.error('Logout failed')
-      }
-    } catch {
-      toast.error('Network error')
-    } finally {
-      setIsLoggingOut(false)
-    }
-  }
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -66,30 +92,8 @@ export default function DashboardLayout() {
     )
   }
 
-  const logoutButton = (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={handleLogout}
-      disabled={isLoggingOut}
-      className="h-9 px-4 text-sm font-medium tracking-widest uppercase text-foreground hover:bg-foreground hover:text-background transition-colors duration-150"
-    >
-      {isLoggingOut ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Logging out...
-        </>
-      ) : (
-        <>
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </>
-      )}
-    </Button>
-  )
-
   return (
-    <Layout headerRightContent={logoutButton} sidebar={<Sidebar />}>
+    <Layout headerRightContent={<LogoutButton />} sidebar={<Sidebar />}>
       <Outlet context={{ user }} />
     </Layout>
   )

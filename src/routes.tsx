@@ -1,42 +1,35 @@
 import { createBrowserRouter } from 'react-router-dom'
-import Landing from './features/landing/page'
-import Login from './features/auth/pages/login'
-import Register from './features/auth/pages/register'
-import DashboardLayout from './features/admin/pages/dashboard-layout'
-import Overview from './features/admin/pages/overview'
-import JwksViewer from './features/admin/pages/jwks'
-import ClientsPage from './features/admin/pages/clients'
 import { checkAuthLoader } from './lib/auth'
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Landing />,
+    lazy: () => import('./features/landing/page').then((m) => ({ Component: m.default })),
   },
   {
     path: '/login',
-    element: <Login />,
+    lazy: () => import('./features/auth/pages/login').then((m) => ({ Component: m.default })),
   },
   {
     path: '/register',
-    element: <Register />,
+    lazy: () => import('./features/auth/pages/register').then((m) => ({ Component: m.default })),
   },
   {
     path: '/dashboard',
-    element: <DashboardLayout />,
+    lazy: () => import('./features/admin/pages/dashboard-layout').then((m) => ({ Component: m.default })),
     loader: checkAuthLoader,
     children: [
       {
         index: true,
-        element: <Overview />,
+        lazy: () => import('./features/admin/pages/overview').then((m) => ({ Component: m.default })),
       },
       {
         path: 'jwks',
-        element: <JwksViewer />,
+        lazy: () => import('./features/admin/pages/jwks').then((m) => ({ Component: m.default })),
       },
       {
         path: 'clients',
-        element: <ClientsPage />,
+        lazy: () => import('./features/admin/pages/clients').then((m) => ({ Component: m.default })),
       },
     ],
   },

@@ -1,7 +1,37 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { getJwks, type JWK, type JwksResponse } from '@/lib/api'
 import { KeyRound, Loader2, AlertCircle } from 'lucide-react'
+
+const JwksKeyCard = memo(function JwksKeyCard({ jwk }: { jwk: JWK }) {
+  return (
+    <div className="brutal-border-light bg-surface">
+      <div className="flex items-center gap-3 brutal-border-bottom px-5 py-3">
+        <KeyRound className="h-5 w-5 text-foreground shrink-0" />
+        <h3 className="font-mono text-sm font-medium tracking-tight uppercase">{jwk.kid}</h3>
+        <span className="ml-auto text-xs font-mono text-muted">{jwk.alg} / {jwk.kty}</span>
+      </div>
+      <div className="p-5 space-y-3">
+        <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2 text-sm">
+          <span className="text-xs font-mono text-muted uppercase tracking-wider">Algorithm</span>
+          <span className="font-mono">{jwk.alg}</span>
+
+          <span className="text-xs font-mono text-muted uppercase tracking-wider">Type</span>
+          <span className="font-mono">{jwk.kty}</span>
+
+          <span className="text-xs font-mono text-muted uppercase tracking-wider">Use</span>
+          <span className="font-mono">{jwk.use}</span>
+
+          <span className="text-xs font-mono text-muted uppercase tracking-wider">Modulus (n)</span>
+          <span className="font-mono break-all text-xs leading-relaxed">{jwk.n}</span>
+
+          <span className="text-xs font-mono text-muted uppercase tracking-wider">Exponent (e)</span>
+          <span className="font-mono break-all text-xs leading-relaxed">{jwk.e}</span>
+        </div>
+      </div>
+    </div>
+  )
+})
 
 export default function JwksViewer() {
   const [keys, setKeys] = useState<JWK[]>([])
@@ -65,31 +95,7 @@ export default function JwksViewer() {
 
       <div className="grid gap-4">
         {keys.map((key) => (
-          <div key={key.kid} className="brutal-border-light bg-surface">
-            <div className="flex items-center gap-3 brutal-border-bottom px-5 py-3">
-              <KeyRound className="h-5 w-5 text-foreground shrink-0" />
-              <h3 className="font-mono text-sm font-medium tracking-tight uppercase">{key.kid}</h3>
-              <span className="ml-auto text-xs font-mono text-muted">{key.alg} / {key.kty}</span>
-            </div>
-            <div className="p-5 space-y-3">
-              <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2 text-sm">
-                <span className="text-xs font-mono text-muted uppercase tracking-wider">Algorithm</span>
-                <span className="font-mono">{key.alg}</span>
-
-                <span className="text-xs font-mono text-muted uppercase tracking-wider">Type</span>
-                <span className="font-mono">{key.kty}</span>
-
-                <span className="text-xs font-mono text-muted uppercase tracking-wider">Use</span>
-                <span className="font-mono">{key.use}</span>
-
-                <span className="text-xs font-mono text-muted uppercase tracking-wider">Modulus (n)</span>
-                <span className="font-mono break-all text-xs leading-relaxed">{key.n}</span>
-
-                <span className="text-xs font-mono text-muted uppercase tracking-wider">Exponent (e)</span>
-                <span className="font-mono break-all text-xs leading-relaxed">{key.e}</span>
-              </div>
-            </div>
-          </div>
+          <JwksKeyCard key={key.kid} jwk={key} />
         ))}
       </div>
     </div>

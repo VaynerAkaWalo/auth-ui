@@ -3,29 +3,29 @@ import { useEffect, useState } from 'react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 
+const headerRight = (
+  <div className="flex items-center gap-4">
+    <Link
+      to="/login"
+      className="inline-flex items-center h-9 px-4 text-sm font-medium tracking-widest uppercase text-foreground hover:bg-foreground hover:text-background transition-colors duration-150"
+    >
+      Sign in
+    </Link>
+    <Link
+      to="/register"
+      className="inline-flex items-center h-9 px-4 text-sm font-medium tracking-widest uppercase brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground transition-colors duration-150"
+    >
+      Register
+    </Link>
+  </div>
+)
+
 export default function Landing() {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     setLoaded(true)
   }, [])
-
-  const headerRight = (
-    <div className="flex items-center gap-4">
-      <Link
-        to="/login"
-        className="inline-flex items-center h-9 px-4 text-sm font-medium tracking-widest uppercase text-foreground hover:bg-foreground hover:text-background transition-colors duration-150"
-      >
-        Sign in
-      </Link>
-      <Link
-        to="/register"
-        className="inline-flex items-center h-9 px-4 text-sm font-medium tracking-widest uppercase brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground transition-colors duration-150"
-      >
-        Register
-      </Link>
-    </div>
-  )
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

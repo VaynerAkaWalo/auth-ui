@@ -1,7 +1,16 @@
 const API_BASE = '/api'
 
+const inflightRequests = new Map<string, Promise<Response>>()
+
 async function fetchApi(path: string, options: RequestInit = {}) {
-  const response = await fetch(`${API_BASE}${path}`, {
+  const key = `${options.method || 'GET'}:${path}:${options.body || ''}`
+
+  const existing = inflightRequests.get(key)
+  if (existing) {
+    return existing.then((r) => r.clone())
+  }
+
+  const promise = fetch(`${API_BASE}${path}`, {
     ...options,
     credentials: 'include',
     headers: {
@@ -9,7 +18,11 @@ async function fetchApi(path: string, options: RequestInit = {}) {
       ...options.headers,
     },
   })
-  return response
+
+  inflightRequests.set(key, promise)
+  promise.finally(() => inflightRequests.delete(key))
+
+  return promise
 }
 
 export async function login(name: string, secret: string) {

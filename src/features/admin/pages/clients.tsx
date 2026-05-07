@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,6 +20,46 @@ import {
 } from '@/lib/api'
 import { Users, Loader2, AlertCircle, Copy, Check } from 'lucide-react'
 
+const ClientTableRow = memo(function ClientTableRow({
+  client,
+  index,
+  total,
+  copiedField,
+  onCopy,
+}: {
+  client: Client
+  index: number
+  total: number
+  copiedField: string | null
+  onCopy: (id: string) => void
+}) {
+  return (
+    <tr className={`${index < total - 1 ? 'brutal-border-bottom' : ''} hover:bg-elevated transition-colors`}>
+      <td className="px-5 py-3 font-mono text-sm font-medium">{client.name}</td>
+      <td className="px-5 py-3 font-mono text-sm">{client.domain}</td>
+      <td className="px-5 py-3 font-mono text-xs break-all">{client.redirectURI}</td>
+      <td className="px-5 py-3 font-mono text-xs uppercase tracking-wider">{client.type}</td>
+      <td className="px-5 py-3">
+        <button
+          type="button"
+          onClick={() => onCopy(client.id)}
+          className="inline-flex items-center gap-1.5 font-mono text-xs text-muted hover:text-foreground transition-colors"
+        >
+          {client.id.substring(0, 8)}...
+          {copiedField === client.id ? (
+            <Check className="h-3 w-3" />
+          ) : (
+            <Copy className="h-3 w-3 shrink-0" />
+          )}
+        </button>
+      </td>
+      <td className="px-5 py-3 font-mono text-xs text-muted whitespace-nowrap">
+        {new Date(client.createdAt).toLocaleString()}
+      </td>
+    </tr>
+  )
+})
+
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -37,6 +77,11 @@ export default function ClientsPage() {
     useState<ClientType | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => {
+    return () => clearTimeout(copyTimeoutRef.current)
+  }, [])
 
   async function fetchClients() {
     try {
@@ -112,7 +157,8 @@ export default function ClientsPage() {
   function handleCopy(field: string, value: string) {
     navigator.clipboard.writeText(value)
     setCopiedField(field)
-    setTimeout(() => setCopiedField(null), 2000)
+    clearTimeout(copyTimeoutRef.current)
+    copyTimeoutRef.current = setTimeout(() => setCopiedField(null), 2000)
   }
 
   if (isLoading) {
@@ -234,29 +280,14 @@ export default function ClientsPage() {
                 </thead>
                 <tbody>
                   {clients.map((client, i) => (
-                    <tr key={client.id} className={`${i < clients.length - 1 ? 'brutal-border-bottom' : ''} hover:bg-elevated transition-colors`}>
-                      <td className="px-5 py-3 font-mono text-sm font-medium">{client.name}</td>
-                      <td className="px-5 py-3 font-mono text-sm">{client.domain}</td>
-                      <td className="px-5 py-3 font-mono text-xs break-all">{client.redirectURI}</td>
-                      <td className="px-5 py-3 font-mono text-xs uppercase tracking-wider">{client.type}</td>
-                      <td className="px-5 py-3">
-                        <button
-                          type="button"
-                          onClick={() => handleCopy(client.id, client.id)}
-                          className="inline-flex items-center gap-1.5 font-mono text-xs text-muted hover:text-foreground transition-colors"
-                        >
-                          {client.id.substring(0, 8)}...
-                          {copiedField === client.id ? (
-                            <Check className="h-3 w-3" />
-                          ) : (
-                            <Copy className="h-3 w-3 shrink-0" />
-                          )}
-                        </button>
-                      </td>
-                      <td className="px-5 py-3 font-mono text-xs text-muted whitespace-nowrap">
-                        {new Date(client.createdAt).toLocaleString()}
-                      </td>
-                    </tr>
+                    <ClientTableRow
+                      key={client.id}
+                      client={client}
+                      index={i}
+                      total={clients.length}
+                      copiedField={copiedField}
+                      onCopy={(id) => handleCopy(id, id)}
+                    />
                   ))}
                 </tbody>
               </table>

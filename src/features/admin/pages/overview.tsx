@@ -24,9 +24,9 @@ export default function Overview() {
           <div className="min-w-0">
             <p className="text-xs font-mono text-muted tracking-widest uppercase mb-1">Logged in as</p>
             <p className="text-xl font-mono font-medium truncate">{user?.name}</p>
-            {user?.id && (
+            {user?.id ? (
               <p className="text-xs font-mono text-muted mt-1 truncate">ID: {user.id}</p>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
