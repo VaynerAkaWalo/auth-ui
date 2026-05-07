@@ -1,14 +1,6 @@
 import { redirect, type LoaderFunctionArgs } from 'react-router-dom'
 import { whoAmI } from '@/lib/api'
-
-function isExternalUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return parsed.origin !== window.location.origin;
-  } catch {
-    return false;
-  }
-}
+import { isExternalUrl } from '@/lib/utils'
 
 export async function checkAuthLoader({ request }: LoaderFunctionArgs) {
   try {

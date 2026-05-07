@@ -6,16 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Layout } from "@/components/layout/layout";
 import { register } from "@/lib/api";
+import { isExternalUrl } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-
-function isExternalUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return parsed.origin !== window.location.origin;
-  } catch {
-    return false;
-  }
-}
 
 export default function Register() {
   const [name, setName] = useState("");

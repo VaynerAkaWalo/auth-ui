@@ -6,24 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Layout } from "@/components/layout/layout";
 import { login } from "@/lib/api";
+import { isExternalUrl } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
-function isExternalUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return parsed.origin !== window.location.origin;
-  } catch {
-    return false;
-  }
-}
-
 export default function Login() {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const redirectUrl = searchParams.get("redirect_url") || searchParams.get("target") || "/dashboard";
+  const [name, setName] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectUrl = searchParams.get("redirect_url") || searchParams.get("target") || "/dashboard"
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
