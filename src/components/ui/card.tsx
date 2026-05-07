@@ -2,7 +2,7 @@ import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
-const cardVariants = cva('rounded-lg border bg-card text-card-foreground shadow-xs')
+const cardVariants = cva('rounded-none border bg-card text-card-foreground')
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {}
 

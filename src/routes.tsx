@@ -1,4 +1,5 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
+import Landing from './features/landing/page'
 import Login from './features/auth/pages/login'
 import Register from './features/auth/pages/register'
 import DashboardLayout from './features/admin/pages/dashboard-layout'
@@ -8,6 +9,10 @@ import ClientsPage from './features/admin/pages/clients'
 import { checkAuthLoader } from './lib/auth'
 
 export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Landing />,
+  },
   {
     path: '/login',
     element: <Login />,
@@ -34,9 +39,5 @@ export const router = createBrowserRouter([
         element: <ClientsPage />,
       },
     ],
-  },
-  {
-    path: '/',
-    element: <Navigate to="/dashboard" replace />,
   },
 ])

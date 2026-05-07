@@ -4,13 +4,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Layout } from "@/components/layout/layout";
 import { login } from "@/lib/api";
 import { Loader2 } from "lucide-react";
@@ -74,58 +67,59 @@ export default function Login() {
 
   return (
     <Layout>
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
-          <CardDescription className="text-center">
-            Enter your credentials to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Sign in"
-              )}
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">
-              Don&apos;t have an account?{" "}
-            </span>
-            <Link to={registerLink} className="text-primary hover:underline">
-              Register
-            </Link>
+      <div className="w-full max-w-md brutal-border-light bg-surface p-8">
+        <div className="mb-8">
+          <h2 className="text-4xl tracking-[0.1em] mb-2">Sign in</h2>
+          <p className="text-sm font-mono text-muted">Enter your credentials to access the system</p>
+          <div className="w-12 h-0.5 bg-foreground mt-4" />
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-xs tracking-[0.15em] uppercase font-mono">Name</Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={isLoading}
+              className="font-mono text-sm"
+            />
           </div>
-        </CardContent>
-      </Card>
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-xs tracking-[0.15em] uppercase font-mono">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+              className="font-mono text-sm"
+            />
+          </div>
+          <Button type="submit" className="w-full brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-sm tracking-[0.15em] uppercase font-medium h-auto py-3" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign in"
+            )}
+          </Button>
+        </form>
+
+        <div className="mt-6 pt-6 brutal-border-top text-center">
+          <span className="text-sm font-mono text-muted">
+            Don&apos;t have an account?{" "}
+          </span>
+          <Link to={registerLink} className="text-sm font-mono text-foreground underline underline-offset-4 hover:text-muted transition-colors">
+            Register
+          </Link>
+        </div>
+      </div>
     </Layout>
   );
 }
