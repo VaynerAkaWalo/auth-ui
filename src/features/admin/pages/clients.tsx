@@ -233,6 +233,7 @@ export default function ClientsPage() {
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Domain</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Redirect URI</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Type</th>
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Client ID</th>
                     <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Created</th>
                   </tr>
                 </thead>
@@ -243,6 +244,20 @@ export default function ClientsPage() {
                       <td className="px-5 py-3 font-mono text-sm">{client.domain}</td>
                       <td className="px-5 py-3 font-mono text-xs break-all">{client.redirectURI}</td>
                       <td className="px-5 py-3 font-mono text-xs uppercase tracking-wider">{client.type}</td>
+                      <td className="px-5 py-3">
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(client.id, client.id)}
+                          className="inline-flex items-center gap-1.5 font-mono text-xs text-muted hover:text-foreground transition-colors"
+                        >
+                          {client.id.substring(0, 8)}...
+                          {copiedField === client.id ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <Copy className="h-3 w-3 shrink-0" />
+                          )}
+                        </button>
+                      </td>
                       <td className="px-5 py-3 font-mono text-xs text-muted whitespace-nowrap">
                         {new Date(client.createdAt).toLocaleString()}
                       </td>
