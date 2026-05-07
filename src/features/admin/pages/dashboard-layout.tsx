@@ -57,18 +57,22 @@ export default function DashboardLayout() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-foreground mx-auto mb-4" />
+          <p className="text-sm font-mono text-muted tracking-widest uppercase">Authenticating...</p>
+        </div>
       </div>
     )
   }
 
   const logoutButton = (
     <Button
-      variant="outline"
+      variant="ghost"
       size="sm"
       onClick={handleLogout}
       disabled={isLoggingOut}
+      className="h-9 px-4 text-sm font-medium tracking-widest uppercase text-foreground hover:bg-foreground hover:text-background transition-colors duration-150"
     >
       {isLoggingOut ? (
         <>

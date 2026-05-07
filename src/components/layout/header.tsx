@@ -4,11 +4,9 @@ interface HeaderProps {
 
 export function Header({ rightContent }: HeaderProps) {
   return (
-    <header className="w-full px-4 py-4 border-b bg-background">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">BLAME DEVS</h1>
-        {rightContent && <div>{rightContent}</div>}
-      </div>
+    <header className="brutal-border-bottom px-6 py-3 flex items-center justify-between bg-background">
+      <h1 className="text-3xl tracking-[0.12em] m-0">BARRICADE</h1>
+      {rightContent && <div>{rightContent}</div>}
     </header>
   );
 }

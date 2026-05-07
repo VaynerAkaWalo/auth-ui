@@ -1,23 +1,8 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import {
   Dialog,
   DialogContent,
@@ -127,142 +112,139 @@ export default function ClientsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-foreground" />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64 text-destructive gap-2">
+      <div className="flex items-center justify-center h-64 text-destructive gap-3">
         <AlertCircle className="h-5 w-5" />
-        <span>{error}</span>
+        <span className="font-mono text-sm">{error}</span>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Clients</h1>
-        <p className="text-muted-foreground">
-          Manage OAuth2 relying-party clients
-        </p>
+        <h2 className="text-4xl tracking-[0.1em] mb-2">Clients</h2>
+        <p className="text-sm font-mono text-muted">Manage OAuth2 relying-party clients</p>
+        <div className="w-12 h-0.5 bg-foreground mt-4" />
       </div>
 
-      <Card>
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-lg">Register new client</CardTitle>
-          <CardDescription>
-            Create a new OAuth2 client for your application
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
+      <div className="brutal-border-light bg-surface">
+        <div className="brutal-border-bottom px-5 py-3">
+          <h3 className="font-mono text-sm font-medium tracking-[0.1em] uppercase">Register new client</h3>
+        </div>
+        <div className="p-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid gap-5 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name" className="text-xs tracking-[0.15em] uppercase font-mono">Name</Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="My App"
                   disabled={isSubmitting}
+                  className="font-mono text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="domain">Domain</Label>
+                <Label htmlFor="domain" className="text-xs tracking-[0.15em] uppercase font-mono">Domain</Label>
                 <Input
                   id="domain"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
                   placeholder="example.com"
                   disabled={isSubmitting}
+                  className="font-mono text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="redirectURI">Redirect URI</Label>
+                <Label htmlFor="redirectURI" className="text-xs tracking-[0.15em] uppercase font-mono">Redirect URI</Label>
                 <Input
                   id="redirectURI"
                   value={redirectURI}
                   onChange={(e) => setRedirectURI(e.target.value)}
                   placeholder="https://example.com/callback"
                   disabled={isSubmitting}
+                  className="font-mono text-sm"
                 />
               </div>
             </div>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-3 px-6">
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Register client
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Existing clients</CardTitle>
-          </div>
-          <CardDescription>
+      <div className="brutal-border-light bg-surface">
+        <div className="flex items-center gap-3 brutal-border-bottom px-5 py-3">
+          <Users className="h-5 w-5 text-foreground shrink-0" />
+          <h3 className="font-mono text-sm font-medium tracking-[0.1em] uppercase">Existing clients</h3>
+          <span className="ml-auto text-xs font-mono text-muted">
             {clients.length === 0
-              ? 'No clients registered yet'
-              : `${clients.length} client${clients.length === 1 ? '' : 's'} registered`}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+              ? 'None registered'
+              : `${clients.length} client${clients.length === 1 ? '' : 's'}`}
+          </span>
+        </div>
+        <div className="p-0">
           {clients.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-muted-foreground">
+            <div className="flex items-center justify-center h-24 text-sm font-mono text-muted">
               No clients found
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Domain</TableHead>
-                  <TableHead>Redirect URI</TableHead>
-                  <TableHead>Created</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {clients.map((client) => (
-                  <TableRow key={client.id}>
-                    <TableCell className="font-medium">{client.name}</TableCell>
-                    <TableCell>{client.domain}</TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {client.redirectURI}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground whitespace-nowrap">
-                      {new Date(client.createdAt).toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="brutal-border-bottom">
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Name</th>
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Domain</th>
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Redirect URI</th>
+                    <th className="text-left px-5 py-3 text-xs font-mono text-muted uppercase tracking-wider">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {clients.map((client, i) => (
+                    <tr key={client.id} className={`${i < clients.length - 1 ? 'brutal-border-bottom' : ''} hover:bg-elevated transition-colors`}>
+                      <td className="px-5 py-3 font-mono text-sm font-medium">{client.name}</td>
+                      <td className="px-5 py-3 font-mono text-sm">{client.domain}</td>
+                      <td className="px-5 py-3 font-mono text-xs break-all">{client.redirectURI}</td>
+                      <td className="px-5 py-3 font-mono text-xs text-muted whitespace-nowrap">
+                        {new Date(client.createdAt).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="brutal-border-light bg-surface">
           <DialogHeader>
-            <DialogTitle>Client registered</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="font-mono text-sm tracking-[0.1em] uppercase">Client registered</DialogTitle>
+            <DialogDescription className="font-mono text-xs text-muted">
               Copy these credentials now. The client secret will not be shown again.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Client ID</Label>
+              <Label className="text-xs tracking-[0.15em] uppercase font-mono">Client ID</Label>
               <div className="flex items-center gap-2">
                 <Input
                   readOnly
                   value={registeredClient?.clientId ?? ''}
-                  className="font-mono"
+                  className="font-mono text-sm"
                 />
                 <Button
                   type="button"
@@ -274,6 +256,7 @@ export default function ClientsPage() {
                       registeredClient?.clientId ?? ''
                     )
                   }
+                  className="rounded-none"
                 >
                   {copiedField === 'clientId' ? (
                     <Check className="h-4 w-4" />
@@ -284,13 +267,13 @@ export default function ClientsPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Client Secret</Label>
+              <Label className="text-xs tracking-[0.15em] uppercase font-mono">Client Secret</Label>
               <div className="flex items-center gap-2">
                 <Input
                   readOnly
                   type="password"
                   value={registeredClient?.clientSecret ?? ''}
-                  className="font-mono"
+                  className="font-mono text-sm"
                 />
                 <Button
                   type="button"
@@ -302,6 +285,7 @@ export default function ClientsPage() {
                       registeredClient?.clientSecret ?? ''
                     )
                   }
+                  className="rounded-none"
                 >
                   {copiedField === 'clientSecret' ? (
                     <Check className="h-4 w-4" />
@@ -313,7 +297,9 @@ export default function ClientsPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => setDialogOpen(false)}>Done</Button>
+            <Button onClick={() => setDialogOpen(false)} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-2 px-5">
+              Done
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

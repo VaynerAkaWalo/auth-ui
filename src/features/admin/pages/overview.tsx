@@ -1,5 +1,4 @@
 import { useOutletContext } from 'react-router-dom'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { User } from 'lucide-react'
 
 interface DashboardContext {
@@ -10,24 +9,27 @@ export default function Overview() {
   const { user } = useOutletContext<DashboardContext>()
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Dashboard</CardTitle>
-        <CardDescription>
-          You are successfully authenticated
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex items-center space-x-4 p-4 rounded-lg bg-muted">
-          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <User className="h-6 w-6 text-primary" />
+    <div className="max-w-md">
+      <div className="mb-8">
+        <h2 className="text-4xl tracking-[0.1em] mb-2">Dashboard</h2>
+        <p className="text-sm font-mono text-muted">You are successfully authenticated</p>
+        <div className="w-12 h-0.5 bg-foreground mt-4" />
+      </div>
+
+      <div className="brutal-border-light bg-surface p-6">
+        <div className="flex items-center gap-5">
+          <div className="h-16 w-16 brutal-border-light bg-background flex items-center justify-center shrink-0">
+            <User className="h-7 w-7 text-foreground" />
           </div>
-          <div>
-            <p className="text-sm text-muted-foreground">Logged in as</p>
-            <p className="text-lg font-semibold">{user?.name}</p>
+          <div className="min-w-0">
+            <p className="text-xs font-mono text-muted tracking-widest uppercase mb-1">Logged in as</p>
+            <p className="text-xl font-mono font-medium truncate">{user?.name}</p>
+            {user?.id && (
+              <p className="text-xs font-mono text-muted mt-1 truncate">ID: {user.id}</p>
+            )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
