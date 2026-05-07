@@ -200,9 +200,9 @@ export default function ClientsPage() {
               </div>
             </div>
             <Button type="submit" disabled={isSubmitting} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-3 px-6">
-              {isSubmitting && (
+              {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              ) : null}
               Register client
             </Button>
           </form>
@@ -274,11 +274,11 @@ export default function ClientsPage() {
         <DialogContent className="brutal-border-light bg-surface">
           <DialogHeader>
             <DialogTitle className="font-mono text-sm tracking-[0.1em] uppercase">Client registered</DialogTitle>
-            {registeredClientType === ClientType.Confidential && (
+            {registeredClientType === ClientType.Confidential ? (
               <DialogDescription className="font-mono text-xs text-muted">
                 Copy these credentials now. The client secret will not be shown again.
               </DialogDescription>
-            )}
+            ) : null}
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -309,7 +309,7 @@ export default function ClientsPage() {
                 </Button>
               </div>
             </div>
-            {registeredClientType === ClientType.Confidential && (
+            {registeredClientType === ClientType.Confidential ? (
               <div className="space-y-2">
                 <Label className="text-xs tracking-[0.15em] uppercase font-mono">Client Secret</Label>
                 <div className="flex items-center gap-2">
@@ -339,7 +339,7 @@ export default function ClientsPage() {
                   </Button>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
           <DialogFooter>
             <Button onClick={() => setDialogOpen(false)} className="brutal-border bg-foreground text-background hover:bg-transparent hover:text-foreground text-xs tracking-[0.15em] uppercase font-mono h-auto py-2 px-5">
