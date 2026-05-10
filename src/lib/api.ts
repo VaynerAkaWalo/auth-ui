@@ -113,6 +113,19 @@ export async function registerClient(
   })
 }
 
+export interface Identity {
+  id: string
+  name: string
+  createdAt: number
+  updatedAt: number
+}
+
+export async function listIdentities() {
+  return fetchApi('/v1/identities', {
+    method: 'GET',
+  })
+}
+
 export async function getJwks() {
   const response = await fetch('/.well-known/jwks.json', {
     method: 'GET',

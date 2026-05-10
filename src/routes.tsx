@@ -31,6 +31,10 @@ export const router = createBrowserRouter([
         path: 'clients',
         lazy: () => import('./features/admin/pages/clients').then((m) => ({ Component: m.default })),
       },
+      {
+        path: 'identities',
+        lazy: () => import('./features/admin/pages/identities').then((m) => ({ Component: m.default })),
+      },
     ],
   },
 ])
